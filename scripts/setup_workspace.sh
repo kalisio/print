@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# set -x
+
+THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
+THIS_DIR=$(dirname "$THIS_FILE")
+ROOT_DIR=$(dirname "$THIS_DIR")
+WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
+
+. "$THIS_DIR/kash/kash.sh"
+
+PDFME_REPO_URL="https://github.com/pdfme/pdfme.git"
+PDFME_DIR="$ROOT_DIR/pdfme"
+
+## Parse options
+##
+
+WORKSPACE_BRANCH=
+WORKSPACE_TAG=
+WORKSPACE_NODE=22
+WORKSPACE_KIND=
+OPT_LIST="n:k:"
+if [ "$CI" != true ]; then
+    OPT_LIST="b:n:t:k:"
+fi
+
+while getopts "$OPT_LIST" OPT; do
+    case $OPT in
+        b) # defines branch to pull
+            WORKSPACE_BRANCH=$OPTARG;;
+        n) # defines node version
+            WORKSPACE_NODE=$OPTARG;;
+        t) # defines tag to pull
+            WORKSPACE_TAG=$OPTARG;;
+        k) # workspace kind (nokli kli klifull)
+            WORKSPACE_KIND=$OPTARG;;
+        *)
+        ;;
+    esac
+done
+
+begin_group "Setting up workspace ..."
+
+# Conditionally remove the PDFME_DIR if it exists and not in CI mode
+# Purpose: Ensure a clean slate for non-CI environments to avoid stale data
+if  [ "$CI" != "true" ] && [ -d "$PDFME_DIR" ]; then
+    rm -rf "$PDFME_DIR"
+fi
+
+# Create the PDFME directory and clone the repository
+mkdir -p "$PDFME_DIR"
+git clone "$PDFME_REPO_URL" "$PDFME_DIR"
+
+# Modify the plugins index.ts file based on context
+# Purpose: Dynamically inject an import statement for map.ts
+PLUGINS_DIR="$PDFME_DIR/playground/src/plugins"
+PLUGINS_FILE="$PLUGINS_DIR/index.ts"
+if [ "$CI" = true ]; then
+    # In CI mode, import map.ts from the local plugins directory
+    sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
+    mv "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
+else
+    # In non-CI mode, import map.ts from the project root
+    sed -i '1i import { map } from '\''../../../../map.ts'\'';' "$PLUGINS_FILE"
+fi
+
+# Add the map plugin to the getPlugins return object
+sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
+
+# Install dependencies and build the project
+nvm use 22
+cd $PDFME_DIR && npm install && npm run build
+cd $PDFME_DIR/playground && npm install
+
+end_group "Setting up workspace ..."
