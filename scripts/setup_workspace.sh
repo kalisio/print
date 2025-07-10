@@ -51,21 +51,13 @@ fi
 mkdir -p "$PDFME_DIR"
 git clone "$PDFME_REPO_URL" "$PDFME_DIR"
 
-# Modify the plugins index.ts file based on context
-# Purpose: Dynamically inject an import statement for map.ts
 PLUGINS_DIR="$PDFME_DIR/playground/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
-if [ "$CI" = true ]; then
-    # In CI mode, import map.ts from the local plugins directory
-    sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
-    mv "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
-else
-    # In non-CI mode, import map.ts from the project root
-    sed -i '1i import { map } from '\''../../../../map.ts'\'';' "$PLUGINS_FILE"
-fi
-
+# Modify the plugins index.ts file
+sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
 # Add the map plugin to the getPlugins return object
 sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
+cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
 
 # Install dependencies and build the project
 nvm use 22
