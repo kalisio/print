@@ -1,0 +1,39 @@
+name: ci
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: "Build"
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  build:
+    name: Build
+    if: ${{
+      github.event_name == 'workflow_dispatch' && inputs.build ||
+      github.event_name == 'push' && !contains(github.event.head_commit.message, 'skip build')
+      }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [ 20 ]
+        debian: [ 'bookworm' ]    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init runner
+        run: bash ./scripts/init_runner.sh ${{ github.job }}
+      - name: Setup workspace
+        env:
+          KALISIO_GITHUB_URL: ${{ secrets.KALISIO_GITHUB_URL }}
+        run: bash ./scripts/setup_workspace.sh
+      - name: Build
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: bash ./scripts/build.sh -p -r ${{ github.job }} -n ${{ matrix.node }} -d ${{ matrix.debian }}
