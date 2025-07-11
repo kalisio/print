@@ -57,13 +57,8 @@ git clone "$PDFME_REPO_URL" "$PDFME_DIR"
 sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
 # Add the map plugin to the getPlugins return object
 sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
-if [ "$CI" = true ]; then
-    # Copy the map.ts file from the root directory to the plugins directory
-    cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
-else
-    # Create a symbolic link from the root map.ts to the plugins directory
-    ln -sf "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
-fi
+# Copy the map.ts file from the root directory to the plugins directory
+cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
 
 
 if  [ "$CI" = "true" ]; then
