@@ -128,14 +128,14 @@ const styles = `
   }
 `
 
-// Converts an ArrayBuffer to a base64-encoded data URL.
+// Converts an ArrayBuffer to a base64-encoded data URL
 function arrayBufferToDataUrl (buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   const binary = Array.from(bytes).map(byte => String.fromCharCode(byte)).join('');
   return `data:image/png;base64,${btoa(binary)}`;
 }
 
-// Creates the main container for the map plugin, displaying either a placeholder or the provided image.
+// Creates the main container for the map plugin, displaying either a placeholder or the provided image
 function createMapContainer (rootElement: HTMLElement, value: string, isDefault: boolean): HTMLElement {
   const container = document.createElement('div');
   const containerStyle: CSS.Properties = {
@@ -165,7 +165,7 @@ function createMapContainer (rootElement: HTMLElement, value: string, isDefault:
   return container;
 }
 
-// Creates and configures the modal for Kano.
+// Creates and configures the modal for Kano
 function createModal (): { sitePopups: HTMLElement; modal: HTMLElement } {
   const sitePopups = document.createElement('div');
   sitePopups.className = 'site-popups';
@@ -200,7 +200,7 @@ function createModal (): { sitePopups: HTMLElement; modal: HTMLElement } {
   return { sitePopups, modal };
 }
 
-// Creates and appends the CSS styles for the modal and spinner to the document head.
+// Creates and appends the CSS styles for the modal and spinner to the document head
 function createStyles (): HTMLStyleElement {
   const style = document.createElement('style');
   style.textContent = styles;
@@ -208,7 +208,7 @@ function createStyles (): HTMLStyleElement {
   return style;
 }
 
-// Creates a trigger button to open the modal.
+// Creates a trigger button to open the modal
 function createTriggerButton (container: HTMLElement): HTMLButtonElement {
   const triggerButton = document.createElement('button');
   triggerButton.className = 'trigger-popup';
@@ -217,7 +217,7 @@ function createTriggerButton (container: HTMLElement): HTMLButtonElement {
   return triggerButton;
 }
 
-// Loads the post-robot library and sets up event listeners for Kano interactions.
+// Loads the post-robot library and sets up event listeners for Kano interactions
 function loadPostRobot (listeners: PostRobotListeners): void {
   if (typeof window.postRobot === 'undefined') {
     const script = document.createElement('script');
@@ -250,7 +250,7 @@ function loadPostRobot (listeners: PostRobotListeners): void {
   }
 }
 
-// Cleans up post-robot listeners and removes the script from the DOM.
+// Cleans up post-robot listeners and removes the script from the DOM
 function cleanupPostRobot (listeners: PostRobotListeners): void {
   if (typeof window.postRobot !== 'undefined') {
     listeners.kanoReady?.cancel();
@@ -264,7 +264,7 @@ function cleanupPostRobot (listeners: PostRobotListeners): void {
   scripts.forEach(script => script.remove());
 }
 
-// Destroys the modal and associated resources.
+// Destroys the modal and associated resources
 function destroyModal (sitePopups: HTMLElement, modal: HTMLElement, listeners: PostRobotListeners): void {
   modal.remove();
   sitePopups.remove();
@@ -286,12 +286,12 @@ function showSpinner (): HTMLElement {
   return spinnerOverlay;
 }
 
-// Removes the spinner overlay from the DOM.
+// Removes the spinner overlay from the DOM
 function destroySpinner (spinnerOverlay: HTMLElement): void {
   spinnerOverlay.remove();
 }
 
-// Handles the modal close event by destroying the modal, showing a spinner, and fetching the map image.
+// Handles the modal close event by destroying the modal, showing a spinner, and fetching the map image
 async function handleKanoModalClosed (
   event: Event,
   onChange: any,
@@ -337,7 +337,7 @@ async function handleKanoModalClosed (
   }
 }
 
-// Sets up a MutationObserver to clean up resources when the root element is removed.
+// Sets up a MutationObserver to clean up resources when the root element is removed
 function setupCleanupObserver (
   rootElement: HTMLElement,
   sitePopups: HTMLElement,
