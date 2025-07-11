@@ -41,8 +41,6 @@ done
 ## Init workspace
 ##
 
-init_app_infos "$ROOT_DIR" "$WORKSPACE_DIR/development/workspaces/apps"
-
 APP="print"
 VERSION="1.0.0"
 FLAVOR=$(get_flavor_from_git "$ROOT_DIR")
