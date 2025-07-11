@@ -64,7 +64,7 @@ cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
 cd $PDFME_DIR && npm install && npm run build
 cd $PDFME_DIR/playground && npm install && npm run build
 
-if  [ "$CI" != "true" ]; then
+if  [ "$CI" = "true" ]; then
     setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
 fi
 
