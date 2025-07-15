@@ -80,6 +80,7 @@ cd $PDFME_DIR && npm run build
 cd $PDFME_DIR/playground && npm run build
 
 # Copy nginx.conf in build output folder (so it's available in docker build context)
+cd $ROOT_DIR
 cp nginx.conf pdfme/playground/dist
 
 docker login --username "$KALISIO_DOCKERHUB_USERNAME" --password-stdin "$KALISIO_DOCKERHUB_URL" < "$KALISIO_DOCKERHUB_PASSWORD"
