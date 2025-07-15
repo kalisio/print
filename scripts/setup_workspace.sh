@@ -60,6 +60,7 @@ sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
 # Copy the map.ts file from the root directory to the plugins directory
 cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
 
+cd $PDFME_DIR && npm run build
 
 if  [ "$CI" = "true" ]; then
     setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"

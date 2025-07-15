@@ -76,7 +76,6 @@ for env in "${envs[@]}"; do
 done
 
 # Build
-cd $PDFME_DIR && npm run build
 cd $PDFME_DIR/playground && npm run build
 
 # Copy nginx.conf in build output folder (so it's available in docker build context)
