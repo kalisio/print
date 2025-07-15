@@ -9,6 +9,8 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 
 . "$THIS_DIR/kash/kash.sh"
 
+PDFME_DIR="$ROOT_DIR/pdfme"
+
 ## Parse options
 ##
 
@@ -57,6 +59,25 @@ IMAGE_NAME="$KALISIO_DOCKERHUB_URL/kalisio/$APP"
 IMAGE_TAG="$VERSION-$FLAVOR-node$NODE_VER-$DEBIAN_VER"
 
 begin_group "Building container $IMAGE_NAME:$IMAGE_TAG ..."
+
+# ENV
+load_env_files "$WORKSPACE_DIR/development/workspaces/apps/print/print.enc.env"
+# Basic ENV list
+env=("VITE_KANO_URL" "VITE_KANO_JWT" "VITE_GATEWAY_URL" "VITE_GATEWAY_JWT")
+for env in "${env[@]}"; do
+  # Variable name with flavor suffix (e.g. VITE_KANO_URL_DEV)
+  flavored_env="${env}_${FLAVOR^^}"
+  # Gets the value of the suffixed variable
+  value="${!flavored_env}"
+  # Export
+  if [ -n "$value" ]; then
+    export "$env=$value"
+  fi
+done
+
+# Build
+cd $PDFME_DIR && npm run build
+cd $PDFME_DIR/playground && npm run build
 
 # Copy nginx.conf in build output folder (so it's available in docker build context)
 cp nginx.conf pdfme/playground/dist
