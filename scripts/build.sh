@@ -63,8 +63,8 @@ begin_group "Building container $IMAGE_NAME:$IMAGE_TAG ..."
 # ENV
 load_env_files "$WORKSPACE_DIR/development/workspaces/apps/print/print.enc.env"
 # Basic ENV list
-env=("VITE_KANO_URL" "VITE_KANO_JWT" "VITE_GATEWAY_URL" "VITE_GATEWAY_JWT")
-for env in "${env[@]}"; do
+envs=("VITE_KANO_URL" "VITE_KANO_JWT" "VITE_GATEWAY_URL" "VITE_GATEWAY_JWT")
+for env in "${envs[@]}"; do
   # Variable name with flavor suffix (e.g. VITE_KANO_URL_DEV)
   flavored_env="${env}_${FLAVOR^^}"
   # Gets the value of the suffixed variable
