@@ -65,8 +65,7 @@ if  [ "$CI" = "true" ]; then
 fi
 
 # Install dependencies and build the project
-cd $PDFME_DIR && npm install
+cd $PDFME_DIR && npm install && npm run build
 cd $PDFME_DIR/playground && npm install
-cd $PDFME_DIR && npm run build
 
 end_group "Setting up workspace ..."
