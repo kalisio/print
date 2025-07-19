@@ -43,29 +43,26 @@ done
 
 begin_group "Setting up workspace ..."
 
-# Remove the PDFME_DIR if it exists 
-if [ -d "$PDFME_DIR" ]; then
-    rm -rf "$PDFME_DIR"
+if [ ! -d "$PDFME_DIR" ]; then
+    # Create the PDFME directory and clone the repository
+    mkdir -p "$PDFME_DIR"
+    git clone "$PDFME_REPO_URL" "$PDFME_DIR"
+
+    # Modify the plugins index.ts file
+    # Inserts ‘map’ import at the beginning of the plugins file
+    sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
+    # Add the map plugin to the getPlugins return object
+    sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
+    # Copy the map.ts file from the root directory to the plugins directory
+    cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
+
+    if  [ "$CI" = "true" ]; then
+        setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
+    fi
+
+    # Install dependencies and build the project
+    cd $PDFME_DIR && npm install && npm run build
+    cd $PDFME_DIR/playground && npm install
 fi
-
-# Create the PDFME directory and clone the repository
-mkdir -p "$PDFME_DIR"
-git clone "$PDFME_REPO_URL" "$PDFME_DIR"
-
-# Modify the plugins index.ts file
-# Inserts ‘map’ import at the beginning of the plugins file
-sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
-# Add the map plugin to the getPlugins return object
-sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
-# Copy the map.ts file from the root directory to the plugins directory
-cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
-
-if  [ "$CI" = "true" ]; then
-    setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
-fi
-
-# Install dependencies and build the project
-cd $PDFME_DIR && npm install && npm run build
-cd $PDFME_DIR/playground && npm install
 
 end_group "Setting up workspace ..."
