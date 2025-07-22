@@ -66,8 +66,8 @@ export const map: Plugin<Map> = {
         // Print
         kanoModal.querySelector('.kano-modal_print')?.addEventListener('click', async (event) => {
           event.stopPropagation()
-          const mapPrinting = await print(kanoModal, style, schema)
-          onChange({ key: 'content', value: mapPrinting })
+          const { mapPrinting, layers, bbox } = await print(kanoModal, style, schema)
+          onChange([{ key: 'content', value: mapPrinting }, { key: 'bbox', value: bbox }, { key: 'layers', value: layers }])
           stopEditing()
         })
       })

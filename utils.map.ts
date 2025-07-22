@@ -257,8 +257,8 @@ export async function print (
   kanoModal: HTMLElement,
   style: HTMLStyleElement,
   schema: object
-): Promise<string> {
-  const { id, name, width, height } = schema
+): any {
+  const { width, height } = schema
   // Get layers & bbox
   let layers: string[] = []
   let bbox: number[] = []
@@ -279,19 +279,12 @@ export async function print (
       return ''
     }
   }
-  // Store in local storage
-  const existingData = localStorage.getItem('map-plugin')
-  let mapPluginData = existingData ? JSON.parse(existingData) : []
-  if (!Array.isArray(mapPluginData)) mapPluginData = []
-  mapPluginData.push({ id, name, layers, bbox })
-  localStorage.setItem('map-plugin', JSON.stringify(mapPluginData))
 
   // Detroy kano Modal
   destroyKanoModal(kanoModal, style)
   // Process print
-  const print = await processPrint(width, height, layers, bbox)
-
-  return print
+  const mapPrinting = await processPrint(width, height, layers, bbox)
+  return { mapPrinting, layers, bbox }
 }
 
 async function processPrint (
@@ -336,28 +329,21 @@ async function processPrint (
 export async function updatePluginMaps (designer: any) {
   const editedTemplate = designer.getTemplate()
   const merged = cloneDeep(editedTemplate)
-  // Retrieve map-plugin data from localStorage
-  const storedMapPluginData = localStorage.getItem('map-plugin')
-  const mapPluginData = storedMapPluginData ? JSON.parse(storedMapPluginData) : []
   // Iterate through schemas
   for (const schemaArray of merged.schemas) {
     for (const schema of schemaArray) {
       if (schema.type === 'map') {
-        // Find matching map-plugin entry by name
-        const pluginData = mapPluginData.find((plugin) => plugin.name === schema.name)
-        if (pluginData) {
-          try {
-            // Print
-            const print = await processPrint(
-              schema.width,
-              schema.height,
-              pluginData.layers,
-              pluginData.bbox
-            )
-            schema.content = print
-          } catch (error) {
-            console.error(`Error processing print for map schema "${schema.name}":`, error)
-          }
+        try {
+          // Print
+          const print = await processPrint(
+            schema.width,
+            schema.height,
+            schema.layers,
+            schema.bbox
+          )
+          schema.content = print
+        } catch (error) {
+          console.error(`Error processing print for map schema "${schema.name}":`, error)
         }
       }
     }
