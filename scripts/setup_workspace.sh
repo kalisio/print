@@ -11,8 +11,10 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 
 PDFME_REPO_URL="https://github.com/pdfme/pdfme.git"
 PDFME_DIR="$ROOT_DIR/pdfme"
-PLUGINS_DIR="$PDFME_DIR/playground/src/plugins"
+PLAYGROUND_DIR="$ROOT_DIR/pdfme/playground"
+PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
+DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
 
 ## Parse options
 ##
@@ -53,8 +55,19 @@ if [ ! -d "$PDFME_DIR" ]; then
     sed -i '1i import { map } from '\''./map.ts'\'';' "$PLUGINS_FILE"
     # Add the map plugin to the getPlugins return object
     sed -i '/return {/{n;s/^\s*/    Map: map,\n&/}' "$PLUGINS_FILE"
-    # Copy the map.ts file from the root directory to the plugins directory
+
+    # Copy map.ts from the root directory to the plugins directory
     cp "$ROOT_DIR/map.ts" "$PLUGINS_DIR/map.ts"
+
+    # Copy utils.map.ts from the root directory to the pdfme directory
+    cp "$ROOT_DIR/utils.map.ts" "$PLAYGROUND_DIR/src/utils.map.ts"
+
+    # Modify Designer.tsx to integrate updatePluginMaps
+    # Inserts updatePluginMaps import at the beginning of the designer file
+    sed -i '1i import { updatePluginMaps } from "../utils.map";' "$DESIGNER_FILE"
+    # 2. Add 'await updatePluginMaps(designer.current)' before 'await generatePDF(designer.current)'
+    # Find the generatePDF call and insert updatePluginMaps before it
+    sed -i '/await generatePDF(designer\.current)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current);' "$DESIGNER_FILE"
 
     if  [ "$CI" = "true" ]; then
         setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
