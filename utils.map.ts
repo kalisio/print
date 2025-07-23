@@ -204,7 +204,8 @@ export function createKanoModal (): { kanoModal: HTMLElement, style: HTMLStyleEl
           'mapActivity.leftPane': { visible: false },
           'mapActivity.bottomPane': { visible: false },
           'mapActivity.fab': { visible: false },
-          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }}
+          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }},
+          'layout.panes.top': { opener: false, visible: true }
         })
       })
     }
