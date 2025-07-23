@@ -204,8 +204,7 @@ export function createKanoModal (): { kanoModal: HTMLElement, style: HTMLStyleEl
           'mapActivity.leftPane': { visible: false },
           'mapActivity.bottomPane': { visible: false },
           'mapActivity.fab': { visible: false },
-          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }},
-          'mapActivity.stickies.content[4]': { visible: false }
+          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }}
         })
       })
     }
@@ -309,6 +308,16 @@ async function processPrint (
     body: JSON.stringify({
       layers,
       bbox,
+      layout: {
+        panes: {
+          bottom: { visible: false },
+          left: { visible: false },
+          right: { visible: false },
+          top: { visible: false }
+        },
+        fab: { visible: false },
+        stickies: { content: [] }
+      },
       size: { width: mmToPx(width), height: mmToPx(height) },
       basePath: '/#/home/map'
     })
