@@ -44,8 +44,20 @@ done
 ##
 
 APP="print"
-VERSION="1.0.0"
 FLAVOR=$(get_flavor_from_git "$ROOT_DIR")
+VERSION="1.0.0"
+case "$FLAVOR" in
+    prod)
+        GIT_TAG=$(get_git_tag "$REPO_ROOT")
+        VERSION=$(get_version_from_git_ref "$GIT_TAG")
+        ;;
+    test)
+        GIT_BRANCH=$(get_git_branch "$REPO_ROOT")
+        VERSION=$(get_version_from_git_ref "$GIT_BRANCH")
+        ;;
+    *)
+        ;;
+esac
 
 echo "About to build $APP v$VERSION-$FLAVOR ..."
 
