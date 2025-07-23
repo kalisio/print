@@ -33,7 +33,7 @@ function arrayBufferToDataUrl (buffer: ArrayBuffer): string {
 // Creates a trigger button to open the kano modal
 export function createTriggerButton (container: HTMLElement): HTMLButtonElement {
   const button = document.createElement('button')
-  button.style.cssText = 'width: 100%; height: 100%; opacity: 0; cursor: pointer; position: absolute;'
+  button.style.cssText = 'width: 100%; height: 100%; opacity: 0; cursor: pointer; position: absolute; top: 0; left: 0;'
   container.appendChild(button)
   return button
 }
@@ -199,8 +199,14 @@ export function createKanoModal (): { kanoModal: HTMLElement, style: HTMLStyleEl
     script.onload = () => {
       window.postRobot.on('kano-ready', () => {
         const kanoIframe = document.getElementById('kano')?.contentWindow
-        if (kanoIframe && KANO_JWT) window.postRobot.send(kanoIframe, 'setLocalStorage', { 'kano-jwt': KANO_JWT })
-        
+        if (kanoIframe && KANO_JWT) window.postRobot.send(kanoIframe, 'setLocalStorage', { 'kano-jwt': KANO_JWT, 'kano-welcome': false, 'kano-install': false })
+        postRobot.send(kanoIframe, 'setConfiguration', {
+          'mapActivity.leftPane': { visible: false },
+          'mapActivity.bottomPane': { visible: false },
+          'mapActivity.fab': { visible: false },
+          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }},
+          'mapActivity.stickies.content[4]': { visible: false }
+        })
       })
     }
     document.head.appendChild(script)
