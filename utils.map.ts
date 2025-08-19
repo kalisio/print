@@ -150,6 +150,9 @@ const kanoModalStyle = `
   .kano-modal_iframe {
     width: 800px;
     height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .kano-modal_print {
     margin-top: 10px;
@@ -163,7 +166,19 @@ const kanoModalStyle = `
 `
 
 // Creates the modal for Kano
-export function createKanoModal (): { kanoModal: HTMLElement, style: HTMLStyleElement } {
+export function createKanoModal (width: number, height: number): { kanoModal: HTMLElement, style: HTMLStyleElement } {
+  // Calculate proportional dimensions
+  let finalWidth: number
+  let finalHeight: number
+  if (width >= height) {
+    // Landscape mode: fixed width = 800px
+    finalWidth = 800
+    finalHeight = Math.round((height / width) * 800)
+  } else {
+    // Portrait mode: fixed height = 600px
+    finalHeight = 600
+    finalWidth = Math.round((width / height) * 600)
+  }
   // HTML
   const kanoModal = document.createElement('div')
   kanoModal.className = 'kano-modal'
@@ -180,7 +195,7 @@ export function createKanoModal (): { kanoModal: HTMLElement, style: HTMLStyleEl
             title="Kano"
             allow="geolocation *"
             frameBorder="0"
-            style="width: 100%; height: 100%"
+            style="width:${finalWidth}px; height:${finalHeight}px;"
             src="${KANO_URL}"
           ></iframe>
         </div>

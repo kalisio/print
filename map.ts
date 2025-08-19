@@ -43,6 +43,15 @@ function createMapContainer (rootElement: HTMLElement, value: string, isDefault:
 export const map: Plugin<Map> = {
   ui: async (arg) => {
     const { value, onChange, rootElement, mode, stopEditing, schema } = arg
+
+    // Verification of minimum dimensions
+    if (schema.width < 50 || schema.height < 50) {
+      const updates = []
+      if (schema.width < 50) updates.push({ key: 'width', value: 50 })
+      if (schema.height < 50) updates.push({ key: 'height', value: 50 })
+      if (updates.length > 0) onChange(updates)
+    }
+
     const isEditable = mode === 'designer'
     const isDefault = value === defaultValue
 
@@ -54,7 +63,7 @@ export const map: Plugin<Map> = {
       // Open Modal
       triggerButton.addEventListener('click', () => {
         // Create kano modal
-        const { kanoModal, style } = createKanoModal()
+        const { kanoModal, style } = createKanoModal(schema.width, schema.height)
         kanoModal.style.display = 'block'
 
         // Close Modal
