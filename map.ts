@@ -49,7 +49,7 @@ export const map: Plugin<Map> = {
       const updates = []
       if (schema.width < 50) updates.push({ key: 'width', value: 50 })
       if (schema.height < 50) updates.push({ key: 'height', value: 50 })
-      if (updates.length > 0) onChange(updates)
+      if (updates.length > 0 && typeof onChange === 'function') onChange(updates)
     }
 
     const isEditable = mode === 'designer'
