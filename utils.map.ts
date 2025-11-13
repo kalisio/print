@@ -10,14 +10,14 @@ const GATEWAY_JWT = import.meta.env.VITE_GATEWAY_JWT
 //                UTILITY FONCTIONS
 /// ===================================================
 
-// Converts millimeters to pixels with DPI, enforcing min 256 and max 4000
+// Converts millimeters to pixels with DPI, enforcing min 256 and max 5000
 function mmToPx (mm: number): number {
   // For now we fix it to the same use to perform screen display
   // as otherwise it causes some problems in Leaflet we have to tackle first
   const DPI = 96
   const px = Math.round(mm * (DPI / 25.4))
   if (px < 256) return 256
-  if (px > 4000) return 4000
+  if (px > 5000) return 5000
   return px
 }
 
