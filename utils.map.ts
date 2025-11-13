@@ -14,7 +14,7 @@ const GATEWAY_JWT = import.meta.env.VITE_GATEWAY_JWT
 function mmToPx (mm: number): number {
   // For now we fix it to the same use to perform screen display
   // as otherwise it causes some problems in Leaflet we have to tackle first
-  const DPI = 96
+  const DPI = 100
   const px = Math.round(mm * (DPI / 25.4))
   if (px < 256) return 256
   if (px > 5000) return 5000
