@@ -6,6 +6,9 @@ const KANO_JWT = import.meta.env.VITE_KANO_JWT
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL
 const GATEWAY_JWT = import.meta.env.VITE_GATEWAY_JWT
 
+// Store listener for cleanup
+let kanoReadyListener: any
+
 /// ===================================================
 //                UTILITY FONCTIONS
 /// ===================================================
@@ -208,37 +211,47 @@ export function createKanoModal (width: number, height: number): { kanoModal: HT
   const style = document.createElement('style')
   style.textContent = kanoModalStyle
   document.head.appendChild(style)
-  // Script
+  // Script and listener setup
+  function setupKanoReadyListener() {
+    if (kanoReadyListener) kanoReadyListener.cancel()
+    kanoReadyListener = window.postRobot.on('kano-ready', async () => {
+      const kanoIframe = document.getElementById('kano')?.contentWindow
+      if (kanoIframe && KANO_JWT) {
+        await window.postRobot.send(kanoIframe, 'setLocalStorage', { 'kano-jwt': KANO_JWT, 'kano-welcome': false, 'kano-install': false }, { timeout: 10000 })
+      }
+      await window.postRobot.send(kanoIframe, 'setConfiguration', {
+        'mapActivity.leftPane': { visible: false },
+        'mapActivity.bottomPane': { visible: false },
+        'mapActivity.fab': { visible: false },
+        'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }},
+        'layout.panes.top': { opener: false, visible: true }
+      }, { timeout: 10000 })
+    })
+  }
   if (typeof window.postRobot === 'undefined') {
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/post-robot@10.0.42/dist/post-robot.min.js'
     script.async = true
     script.onload = () => {
-      window.postRobot.on('kano-ready', () => {
-        const kanoIframe = document.getElementById('kano')?.contentWindow
-        if (kanoIframe && KANO_JWT) window.postRobot.send(kanoIframe, 'setLocalStorage', { 'kano-jwt': KANO_JWT, 'kano-welcome': false, 'kano-install': false })
-        postRobot.send(kanoIframe, 'setConfiguration', {
-          'mapActivity.leftPane': { visible: false },
-          'mapActivity.bottomPane': { visible: false },
-          'mapActivity.fab': { visible: false },
-          'mapActivity.topPane.filter': { id: { $in: ['locate-user', 'search-location'] }},
-          'layout.panes.top': { opener: false, visible: true }
-        })
-      })
+      setupKanoReadyListener()
     }
     document.head.appendChild(script)
   }
-
   return { kanoModal, style }
 }
 
 // Destroys the kano modal and associated resources
 export function destroyKanoModal (kanoModal: HTMLElement, style: HTMLStyleElement): void {
+  const iframe = kanoModal.querySelector('#kano') as HTMLIFrameElement | null
+  if (iframe) iframe.src = 'about:blank'
   kanoModal.remove()
   style.remove()
   const scripts = document.querySelectorAll('script[src="https://cdn.jsdelivr.net/npm/post-robot@10.0.42/dist/post-robot.min.js"]')
   scripts.forEach(script => script.remove())
-  if (typeof window.postRobot !== 'undefined' && window.postRobot._listeners) window.postRobot.off('kano-ready')
+  if (kanoReadyListener) {
+    kanoReadyListener.cancel()
+    kanoReadyListener = null
+  }
 }
 
 /// ===================================================
@@ -289,21 +302,20 @@ export async function print (
   if (kano) {
     try {
       // Retrieve layers
-      const layersResult = await window.postRobot.send(kano, 'map', { command: 'getLayers' })
+      const layersResult = await window.postRobot.send(kano, 'map', { command: 'getLayers' }, { timeout: 10000 })
       // Filter layers to include only names where isVisible is true
       layers = (layersResult.data || [])
         .filter((layer: { isVisible: boolean, name: string }) => layer.isVisible === true)
         .map((layer: { name: string }) => layer.name)
       // Retrieve bounds
-      const boundsResult = await window.postRobot.send(kano, 'map', { command: 'getBounds' })
+      const boundsResult = await window.postRobot.send(kano, 'map', { command: 'getBounds' }, { timeout: 10000 })
       const [[south, west], [north, east]] = boundsResult.data
       bbox = [west, south, east, north]
     } catch (error) {
       return ''
     }
   }
-
-  // Detroy kano Modal
+  // Destroy kano Modal
   destroyKanoModal(kanoModal, style)
   // Process print
   const mapPrinting = await processPrint(width, height, layers, bbox)
