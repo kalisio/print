@@ -15,6 +15,7 @@ PLAYGROUND_DIR="$ROOT_DIR/pdfme/playground"
 PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
 DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
+APP_FILE="$PLAYGROUND_DIR/src/App.tsx"
 
 ## Parse options
 ##
@@ -68,6 +69,18 @@ if [ ! -d "$PDFME_DIR" ]; then
     # 2. Add 'await updatePluginMaps(designer.current)' before 'await generatePDF(designer.current)'
     # Find the generatePDF call and insert updatePluginMaps before it
     sed -i '/await generatePDF(designer\.current)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current);' "$DESIGNER_FILE"
+
+    ### Patch App.tsx (disable the use of arrows for movement)
+    sed -i '1i import { useEffect } from "react";' "$APP_FILE"
+    sed -i '/export default function App() {/a \
+    useEffect(() => {\
+        const handle = (e: KeyboardEvent) =>\
+        ['\''ArrowUp'\'','\''ArrowDown'\'','\''ArrowLeft'\'','\''ArrowRight'\''].includes(e.key)\
+            && (e.preventDefault(), e.stopPropagation());\
+        document.addEventListener('\''keydown'\'', handle, true);\
+        return () => document.removeEventListener('\''keydown'\'', handle, true);\
+    }, []);\
+    ' "$APP_FILE"
 
     if  [ "$CI" = "true" ]; then
         setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
