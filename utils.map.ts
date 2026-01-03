@@ -118,69 +118,85 @@ const spinnerStyle = `
 `
 // CSS styles for modal
 const kanoModalStyle = `
-  .kano-modal {
-    position: relative;
-    z-index: 999;
-  }
   .kano-modal_overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.75);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 2000;
   }
   .kano-modal_container {
     background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    max-width: 850px;
-    width: 90%;
-    position: relative;
-    animation: fadeInUp 0.3s ease;
-  }
-  .kano-modal_close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    color: #333;
-  }
-  .kano-modal_iframe {
-    width: 800px;
-    height: 600px;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
+    padding: 0;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .kano-modal_close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .kano-modal_iframe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  .kano-modal_iframe iframe {
+    border: none;
+    box-sizing: border-box;
   }
   .kano-modal_print {
-    margin-top: 10px;
-    padding: 8px 16px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 18px;
     background: #007bff;
-    color: white;
+    border-radius: 6px;
     border: none;
-    border-radius: 4px;
+    color: white;
     cursor: pointer;
+    z-index: 10;
   }
 `
 
 // Creates the modal for Kano
 export function createKanoModal (width: number, height: number): { kanoModal: HTMLElement, style: HTMLStyleElement } {
   // Calculate proportional dimensions
-  let finalWidth: number
-  let finalHeight: number
+  const modalWidth = window.innerWidth - 20
+  const modalHeight = window.innerHeight - 20
+  const iframePadding = 40
+  let iframeWidth: number
+  let iframeHeight: number
   if (width >= height) {
-    // Landscape mode: fixed width = 800px
-    finalWidth = 800
-    finalHeight = Math.round((height / width) * 800)
+    iframeWidth = modalWidth - iframePadding
+    iframeHeight = Math.round((height / width) * iframeWidth)
+    if (iframeHeight > modalHeight - iframePadding) {
+      iframeHeight = modalHeight - iframePadding
+      iframeWidth = Math.round((width / height) * iframeHeight)
+    }
   } else {
-    // Portrait mode: fixed height = 600px
-    finalHeight = 600
-    finalWidth = Math.round((width / height) * 600)
+    iframeHeight = modalHeight - iframePadding
+    iframeWidth = Math.round((width / height) * iframeHeight)
+    if (iframeWidth > modalWidth - iframePadding) {
+      iframeWidth = modalWidth - iframePadding
+      iframeHeight = Math.round((height / width) * iframeWidth)
+    }
   }
   // HTML
   const kanoModal = document.createElement('div')
@@ -197,8 +213,7 @@ export function createKanoModal (width: number, height: number): { kanoModal: HT
             id="kano"
             title="Kano"
             allow="geolocation *"
-            frameBorder="0"
-            style="width:${finalWidth}px; height:${finalHeight}px;"
+            style="width:${iframeWidth}px; height:${iframeHeight}px;"
             src="${KANO_URL}"
           ></iframe>
         </div>
