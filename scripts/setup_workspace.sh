@@ -16,6 +16,7 @@ PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
 DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
 APP_FILE="$PLAYGROUND_DIR/src/App.tsx"
+EXTERNAL_BUTTON_FILE="$PLAYGROUND_DIR/src/components/ExternalButton.tsx"
 
 ## Parse options
 ##
@@ -70,17 +71,35 @@ if [ ! -d "$PDFME_DIR" ]; then
     # Find the generatePDF call and insert updatePluginMaps before it
     sed -i '/await generatePDF(designer\.current)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current);' "$DESIGNER_FILE"
 
-    ### Patch App.tsx (disable the use of arrows for movement)
-    sed -i '1i import { useEffect } from "react";' "$APP_FILE"
-    sed -i '/export default function App() {/a \
-    useEffect(() => {\
-        const handle = (e: KeyboardEvent) =>\
-        ['\''ArrowUp'\'','\''ArrowDown'\'','\''ArrowLeft'\'','\''ArrowRight'\''].includes(e.key)\
-            && (e.preventDefault(), e.stopPropagation());\
-        document.addEventListener('\''keydown'\'', handle, true);\
-        return () => document.removeEventListener('\''keydown'\'', handle, true);\
-    }, []);\
-    ' "$APP_FILE"
+    #
+    sed -i 's#<a href={href} target="_blank" rel="noopener noreferrer">#<a href={href} target="_blank" rel="noopener noreferrer" className="hidden">#' "$EXTERNAL_BUTTON_FILE"
+
+    # Replace entire App.tsx content
+    cat > "$APP_FILE" << 'EOF'
+    import { useEffect } from "react";
+    import { Routes, Route } from "react-router-dom";
+    import { ToastContainer } from 'react-toastify';
+    import Designer from "./routes/Designer";
+
+    export default function App() {
+        useEffect(() => {
+            const handle = (e: KeyboardEvent) =>
+            ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)
+                && (e.preventDefault(), e.stopPropagation());
+            document.addEventListener('keydown', handle, true);
+            return () => document.removeEventListener('keydown', handle, true);
+        }, []);
+
+    return (
+        <div className="min-h-screen flex flex-col">
+        <Routes>
+            <Route path={"/"} element={<Designer />} />
+        </Routes>
+        <ToastContainer />
+        </div>
+    );
+    }
+EOF
 
     if  [ "$CI" = "true" ]; then
         setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
