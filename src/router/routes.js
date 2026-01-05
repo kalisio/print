@@ -1,5 +1,3 @@
-const tours = require('../tours')
-
 module.exports = [{
   path: '/:token?',
   name: 'index',

@@ -9,7 +9,6 @@
 </template>
 
 <script setup>
-import _ from 'lodash'
 import { Store } from '@kalisio/kdk/core.client'
 
 const playgroundPdfme = Store.get('capabilities.api.playgroundPdfme')
