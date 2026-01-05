@@ -43,7 +43,7 @@ done
 ## Init workspace
 ##
 
-APP="print"
+APP="pdfme"
 FLAVOR=$(get_flavor_from_git "$ROOT_DIR")
 VERSION="1.0.0"
 case "$FLAVOR" in
