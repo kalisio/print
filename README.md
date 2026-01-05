@@ -1,3 +1,5 @@
+[![Kalisio](https://s3.eu-central-1.amazonaws.com/kalisioscope/print/print-logo-color-512x192.png)](https://kalisio.com)
+
 ## Kalisio Print
 
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/print?sort=semver&label=latest)](https://github.com/kalisio/kapp/releases)
