@@ -3,18 +3,84 @@ on:
   push:
   workflow_dispatch:
     inputs:
-      build:
-        description: "Build"
+      run_tests:
+        description: "Run tests"
+        default: false
+        required: false
+        type: boolean
+      additional_tests:
+        description: "Run additional tests"
+        default: false
+        required: false
+        type: boolean
+      build_app:
+        description: "Build app"
+        default: false
+        required: false
+        type: boolean
+      build_pdfme:
+        description: "Build pdfme"
         default: false
         required: false
         type: boolean
 
 jobs:
-  build:
-    name: Build
+  run_tests:
+    name: Run tests
     if: ${{
-      github.event_name == 'workflow_dispatch' && inputs.build ||
-      github.event_name == 'push' && !contains(github.event.head_commit.message, 'skip build')
+      github.event_name == 'workflow_dispatch' && inputs.run_tests ||
+      github.event_name == 'push' && !contains(github.event.head_commit.message, 'skip tests')
+      }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init runner
+        run: bash ./scripts/init_runner.sh ${{ github.job }}
+      - name: Setup workspace
+        env:
+          KALISIO_GITHUB_URL: ${{ secrets.KALISIO_GITHUB_URL }}
+        run: bash ./scripts/setup_workspace.sh -k klifull
+      - name: Run tests
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: bash ./scripts/run_tests.sh -s -r ${{ github.job }}
+
+  additional_tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [ 20, 22 ]
+        mongo: [ 7, 8 ]
+    name: Additional tests
+    if: ${{
+      github.event_name == 'workflow_dispatch' && inputs.additional_tests ||
+      github.event_name == 'push' && contains(github.event.head_commit.message, 'additional tests')
+      }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init runner
+        run: bash ./scripts/init_runner.sh ${{ github.job }}
+      - name: Setup workspace
+        env:
+          KALISIO_GITHUB_URL: ${{ secrets.KALISIO_GITHUB_URL }}
+        run: bash ./scripts/setup_workspace.sh -k klifull -n ${{ matrix.node }}
+      - name: Run tests
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: bash ./scripts/run_tests.sh -n ${{ matrix.node }} -m ${{ matrix.mongo }}
+
+  build_app:
+    name: Build App
+    if: ${{
+      github.event_name == 'workflow_dispatch' && inputs.build_app ||
+      github.event_name == 'push' && !contains(github.event.head_commit.message, 'skip build app')
       }}
     runs-on: ubuntu-22.04
     strategy:
@@ -36,4 +102,27 @@ jobs:
       - name: Build
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-        run: bash ./scripts/build.sh -p -r ${{ github.job }} -n ${{ matrix.node }} -d ${{ matrix.debian }}
+        run: bash ./scripts/build_app.sh -p -r ${{ github.job }} -n ${{ matrix.node }} -d ${{ matrix.debian }}
+
+  build_pdfme:
+    name: Build docs
+    if: ${{
+      github.event_name == 'workflow_dispatch' && inputs.build_pdfme ||
+      github.event_name == 'push' && contains(github.event.head_commit.message, 'doc')
+      }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init runner
+        run: bash ./scripts/init_runner.sh ${{ github.job }}
+      - name: Setup workspace
+        env:
+          KALISIO_GITHUB_URL: ${{ secrets.KALISIO_GITHUB_URL }}
+        run: bash ./scripts/setup_workspace.sh -k nokli
+      - name: Build docs
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: bash ./scripts/build_pdfme.sh -p -r ${{ github.job }}

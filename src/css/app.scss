@@ -1,0 +1,14 @@
+// app global css
+
+a {
+  color: $accent;
+  cursor: pointer;
+}
+
+#page-content-container {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  overflow: hidden;
+}

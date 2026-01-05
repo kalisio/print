@@ -1,0 +1,161 @@
+{
+  "name": "kalisio-print",
+  "description": "Kalisio print Application",
+  "version": "1.0.0",
+  "homepage": "https://github.com/kalisio/print",
+  "keywords": [
+    "kalisio"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kalisio/print.git"
+  },
+  "author": {
+    "name": "Kalisio contributors",
+    "url": "https://github.com/kalisio"
+  },
+  "contributors": [],
+  "bugs": {
+    "url": "https://github.com/kalisio/print/issues"
+  },
+  "scripts": {
+    "release:patch": "cd api && npm run release:patch && cd .. && npm version --no-git-tag-version --force patch",
+    "release:minor": "cd api && npm run release:minor && cd .. && npm version --no-git-tag-version --force minor",
+    "release:major": "cd api && npm run release:major && cd .. && npm version --no-git-tag-version --force major",
+    "changelog": "github_changelog_generator -u kalisio -p print && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
+    "clean": "quasar clean",
+    "provision": "npm run configs:cp && npm run css:cp && npm run icons:cp && npm run images:cp && npm run tours:cp",
+    "dev": "npm run provision && cross-env NODE_ENV=development quasar dev",
+    "prod": "cd api && npm run prod",
+    "build": "npm run provision && quasar build",
+    "pwa:dev": "npm run provision && cross-env NODE_ENV=development BUILD_MODE=pwa quasar dev -m pwa",
+    "pwa:build": "npm run provision && cross-env BUILD_MODE=pwa quasar build -m pwa",
+    "analyze": "cross-env ANALYZE_BUNDLE=1 npm run build",
+    "lint": "standard src/**/*.js src-pwa/**/*.js src/**/*.vue test/**/*.mjs --fix",
+    "benchmark": "node ./benchmark",
+    "configs:cp": "shx mkdir -p ./config/kdk && shx cp -R node_modules/@kalisio/kdk/extras/configs/* config/kdk",
+    "css:cp": "shx cp -R node_modules/@kalisio/kdk/extras/css/* src/css/kdk",
+    "icons:cp": "shx mkdir -p ./public/kdk && shx cp -R node_modules/@kalisio/kdk/extras/icons/* ./public/kdk",
+    "images:cp": "shx mkdir -p ./public/kdk && shx cp -R node_modules/@kalisio/kdk/extras/images/* public/kdk",
+    "tours:cp": "shx mkdir -p ./src/tours/kdk && shx cp -R node_modules/@kalisio/kdk/extras/tours/* src/tours/kdk",
+    "tests:cp": "shx mkdir -p ./test/kdk && shx cp -R node_modules/@kalisio/kdk/extras/tests/* ./test/kdk",
+    "mocha": "mocha test/**/*.test.mjs --timeout 30000",
+    "coverage": "c8 npm run mocha",
+    "test:server": "cd api && npm run test",
+    "test:client": "npm run tests:cp && cd test && npm run coverage"
+  },
+  "standard": {
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "plugins": [
+      "vue"
+    ],
+    "env": [
+      "mocha"
+    ],
+    "globals": [
+      "DEV",
+      "PROD",
+      "__THEME",
+      "test",
+      "fixture",
+      "self",
+      "location"
+    ]
+  },
+  "dependencies": {
+    "@casl/ability": "^6.3.0",
+    "@casl/mongoose": "^7.1.0",
+    "@feathersjs/client": "^5.0.8",
+    "@kalisio/feathers-localforage": "^1.2.0",
+    "@kalisio/feathers-s3": "^1.5.0",
+    "@kalisio/feathers-webpush": "^1.0.1",
+    "@pdfme/ui": "^5.2.0",
+    "@quasar/extras": "1.16.3",
+    "@thumbmarkjs/thumbmarkjs": "^0.16.1",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "ajv-i18n": "^3.6.0",
+    "ajv-keywords": "^5.1.0",
+    "chart.js": "^3.7.1",
+    "chartjs-adapter-moment": "^1.0.1",
+    "chartjs-chart-matrix": "^1.1.1",
+    "chartjs-plugin-annotation": "^1.4.0",
+    "chartjs-plugin-datalabels": "^2.0.0",
+    "chartjs-plugin-zoom": "^1.2.1",
+    "chroma-js": "^2.4.2",
+    "core-js": "^3.6.5",
+    "crypto-browserify": "^3.12.0",
+    "email-validator": "^2.0.4",
+    "faker": "5.5.3",
+    "feathers-reactive": "^0.11.0",
+    "i18next": "^21.6.16",
+    "jwt-decode": "^3.1.2",
+    "loglevel": "^1.8.0",
+    "mathjs": "^10.5.0",
+    "mime": "^3.0.0",
+    "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
+    "papaparse": "^5.3.2",
+    "password-generator": "^2.3.2",
+    "path-browserify": "^1.0.1",
+    "pinch-zoom-element": "^1.1.1",
+    "quasar": "2.12.0",
+    "sanitize-html": "^2.7.0",
+    "showdown": "^2.1.0",
+    "sift": "^16.0.0",
+    "socket.io-client": "^4.4.1",
+    "stream-browserify": "^3.0.0",
+    "url": "^0.11.0",
+    "vue": "3.4.14",
+    "vue-i18n": "^9.2.0-beta.35",
+    "vue-router": "^4.0.0",
+    "vue3-tour": "^1.0.3"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app-webpack": "3.9.2",
+    "c8": "^7.11.3",
+    "chai": "^4.3.6",
+    "chai-lint": "^0.1.1",
+    "config": "^3.3.7",
+    "cross-env": "^7.0.3",
+    "envsub": "^4.0.7",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "eslint-webpack-plugin": "^3.1.1",
+    "mocha": "^10.0.0",
+    "pixelmatch": "^5.2.0",
+    "pngjs": "^5.0.0",
+    "prettier": "^2.5.1",
+    "puppeteer": "^24.10.2",
+    "shx": "^0.3.4",
+    "standard": "^17.0.0",
+    "superagent": "^5.1.0",
+    "webpack-bundle-analyzer": "^4.8.0",
+    "workbox-webpack-plugin": "^6.0.0"
+  },
+  "resolutions": {
+    "vue": "3.4.14"
+  },
+  "engines": {
+    "node": ">= 20.0.0",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ]
+}
