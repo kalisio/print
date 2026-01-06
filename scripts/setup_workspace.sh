@@ -47,17 +47,20 @@ done
 
 begin_group "Setting up workspace ..."
 
-if [ "$CI" != true ]; then
-    # This code is only executed when we're running on developer machines.
-    # In this case, we expect an additional argument to define where to create the 'CI workspace'
-    shift $((OPTIND-1))
-    WORKSPACE_DIR="$1"
-
-    # unset KALISIO_DEVELOPMENT_DIR because we want kli to clone everyhting in $WORKSPACE_DIR
-    unset KALISIO_DEVELOPMENT_DIR
-    # TODO: you may need to undef more variables like this if you have client specific environment variables
-    # Here we don't since it's all kalisio code
+if  [ "$CI" = "true" ]; then
+    setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
 fi
+# if [ "$CI" != true ]; then
+#     # This code is only executed when we're running on developer machines.
+#     # In this case, we expect an additional argument to define where to create the 'CI workspace'
+#     shift $((OPTIND-1))
+#     WORKSPACE_DIR="$1"
+
+#     # unset KALISIO_DEVELOPMENT_DIR because we want kli to clone everyhting in $WORKSPACE_DIR
+#     unset KALISIO_DEVELOPMENT_DIR
+#     # TODO: you may need to undef more variables like this if you have client specific environment variables
+#     # Here we don't since it's all kalisio code
+# fi
 
 # This is a function defined in the kash repository. Here is the associated documentation:
 ## Setup a suitable workspace for the given app.
