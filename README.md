@@ -1,4 +1,4 @@
-[![Kalisio](https://s3.eu-central-1.amazonaws.com/kalisioscope/print/print-logo-color-512x192.png)](https://kalisio.com)
+[![Kalisio](https://kalisio.github.io/kalisioscope/print/print-logo-color-512x192.png)](https://kalisio.com)
 
 ## Kalisio Print
 
