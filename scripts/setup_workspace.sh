@@ -47,9 +47,9 @@ done
 
 begin_group "Setting up workspace ..."
 
-if  [ "$CI" = "true" ]; then
-    setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
-fi
+# if  [ "$CI" = "true" ]; then
+#     setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
+# fi
 
 if [ ! -d "$PDFME_DIR" ]; then
     # Create the PDFME directory and clone the repository
