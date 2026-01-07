@@ -51,6 +51,17 @@ begin_group "Setting up workspace ..."
 #     setup_workspace "$WORKSPACE_DIR" "$KALISIO_GITHUB_URL/kalisio/development.git"
 # fi
 
+if [ "$CI" = true ]; then
+    setup_app_workspace \
+        "$ROOT_DIR" \
+        "$WORKSPACE_DIR" \
+        "$KALISIO_GITHUB_URL/kalisio/development.git" \
+        "$WORKSPACE_NODE" \
+        "workspaces/apps" \
+        "$WORKSPACE_KIND" \
+        "${WORKSPACE_TAG:-$WORKSPACE_BRANCH}"
+fi
+
 if [ ! -d "$PDFME_DIR" ]; then
     # Create the PDFME directory and clone the repository
     mkdir -p "$PDFME_DIR"
@@ -122,25 +133,5 @@ fi
 #     # Here we don't since it's all kalisio code
 # fi
 
-# This is a function defined in the kash repository. Here is the associated documentation:
-## Setup a suitable workspace for the given app.
-## Expected args:
-## 1. the app repository dir
-## 2. the workspace dir
-## 3. the url to use to clone the corresponding 'development' repository
-## 4. the node version to use to setup the workspace (matter because we run kli using this node version)
-## 5. the directory in which we'll find kli files relative to the 'development' repository root directory (that's $KLI_BASE)
-## 6. the kind of kli we want to run (nokli, kli or klifull => cf. run_kli())
-## 7. (only in dev mode) the ref (ie. tag or branch) to checkout in the workspace
-#
-# TODO: you'll need to adjust parameters 3 and 5. ie. associated 'development' repository URL + $KLI_BASE value
-setup_app_workspace \
-    "$ROOT_DIR" \
-    "$WORKSPACE_DIR" \
-    "$KALISIO_GITHUB_URL/kalisio/development.git" \
-    "$WORKSPACE_NODE" \
-    "workspaces/apps" \
-    "$WORKSPACE_KIND" \
-    "${WORKSPACE_TAG:-$WORKSPACE_BRANCH}"
 
 end_group "Setting up workspace ..."
