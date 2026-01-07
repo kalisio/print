@@ -41,7 +41,7 @@ done
 ## Init workspace
 ##
 
-. "$WORKSPACE_DIR/development/workspaces/apps/apps.sh" kapp
+. "$WORKSPACE_DIR/development/workspaces/apps/apps.sh" print
 
 ## Run tests
 ##
