@@ -59,6 +59,19 @@ load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.e
 ##
 
 # Build playground
+load_env_files "$WORKSPACE_DIR/development/workspaces/apps/print/print.enc.env"
+# Basic ENV list
+envs=("VITE_KANO_URL" "VITE_KANO_JWT" "VITE_GATEWAY_URL" "VITE_GATEWAY_JWT")
+for env in "${envs[@]}"; do
+  # Variable name with flavor suffix (e.g. VITE_KANO_URL_DEV)
+  flavored_env="${env}_${FLAVOR^^}"
+  # Gets the value of the suffixed variable
+  value="${!flavored_env}"
+  # Export
+  if [ -n "$value" ]; then
+    export "$env=$value"
+  fi
+done
 cd $PDFME_DIR/playground && npm run build
 cd $ROOT_DIR
 
