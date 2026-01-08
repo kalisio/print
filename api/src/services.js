@@ -16,18 +16,18 @@ export default async function () {
         name: 'print',
         domain: app.get('domain'),
         version: packageInfo.version,
-        playgroundPdfme: app.get('playgroundPdfmeUrl')
+        playgroundPdfme: process.env.NODE_ENV === 'production' ? app.get('domain') + app.get('apiPath') + '/playground' : app.get('playgroundPdfmeUrl')
       }
       if (process.env.BUILD_NUMBER) {
         response.buildNumber = process.env.BUILD_NUMBER
       }
       res.json(response)
     })
+    // Create KDK base services
     await app.configure(kdkCore)
+    // Create the default users
+    await createDefaultUsers.call(app)
   } catch (error) {
     app.logger.error(error.message)
   }
-
-  // Create the default users
-  await createDefaultUsers.call(app)
 }

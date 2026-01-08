@@ -13,4 +13,3 @@ development/*
 **/*dockerignore
 **/.git
 **/.gitignore
-**/pdfme

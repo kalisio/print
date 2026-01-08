@@ -17,6 +17,7 @@ PLUGINS_FILE="$PLUGINS_DIR/index.ts"
 DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
 APP_FILE="$PLAYGROUND_DIR/src/App.tsx"
 EXTERNAL_BUTTON_FILE="$PLAYGROUND_DIR/src/components/ExternalButton.tsx"
+VITE_CONFIG_FILE="$PLAYGROUND_DIR/vite.config.ts"
 
 ## Parse options
 ##
@@ -82,9 +83,13 @@ if [ ! -d "$PDFME_DIR" ]; then
     # Modify Designer.tsx to integrate updatePluginMaps
     # Inserts updatePluginMaps import at the beginning of the designer file
     sed -i '1i import { updatePluginMaps } from "../utils.map";' "$DESIGNER_FILE"
-    # 2. Add 'await updatePluginMaps(designer.current)' before 'await generatePDF(designer.current)'
+    # Add 'await updatePluginMaps(designer.current)' before 'await generatePDF(designer.current)'
     # Find the generatePDF call and insert updatePluginMaps before it
     sed -i '/await generatePDF(designer\.current)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current);' "$DESIGNER_FILE"
+
+    # Add base option to Vite config 
+    sed -i "/export default defineConfig({/a\\
+  base: '/api/playground/'," "$VITE_CONFIG_FILE"
 
     #
     sed -i 's#<a href={href} target="_blank" rel="noopener noreferrer">#<a href={href} target="_blank" rel="noopener noreferrer" className="hidden">#' "$EXTERNAL_BUTTON_FILE"
@@ -108,7 +113,7 @@ if [ ! -d "$PDFME_DIR" ]; then
     return (
         <div className="min-h-screen flex flex-col">
         <Routes>
-            <Route path={"/"} element={<Designer />} />
+            <Route path={"/api/playground"} element={<Designer />} />
         </Routes>
         <ToastContainer />
         </div>

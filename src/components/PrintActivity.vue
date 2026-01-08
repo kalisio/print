@@ -9,7 +9,10 @@
 </template>
 
 <script setup>
+import _ from 'lodash'
+import config from 'config'
 import { Store } from '@kalisio/kdk/core.client'
 
-const playgroundPdfme = Store.get('capabilities.api.playgroundPdfme')
+// Data
+const playgroundPdfme = `${Store.get('capabilities.api.playgroundPdfme')}/?jwt=${window.localStorage.getItem(_.get(config, 'apiJwt'))}`
 </script>

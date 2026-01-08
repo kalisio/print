@@ -1,10 +1,11 @@
 import { kdk } from '@kalisio/kdk/core.api.js'
 import fs from 'fs-extra'
+import path from 'path'
 import _ from 'lodash'
 import https from 'https'
 import proxyMiddleware from 'http-proxy-middleware'
 import express from '@feathersjs/express'
-
+import { authenticate } from '@feathersjs/express'
 import middlewares from './middlewares.js'
 import services from './services.js'
 import hooks from './hooks.js'
@@ -16,7 +17,11 @@ export class Server {
     // Serve pure static assets
     if (process.env.NODE_ENV === 'production') {
       this.app.use('/', express.static(this.app.get('distPath')))
-    }
+      this.app.use(this.app.get('apiPath') + '/playground/assets', express.static(path.join(this.app.get('distPlayground'), 'assets')))
+      this.app.get(this.app.get('apiPath') + '/playground/*', authenticate('jwt'), (req, res) => {
+        res.sendFile(path.join(this.app.get('distPlayground'), 'index.html'))
+      })
+    }    
     // In dev this is done by the webpack server
 
     // Define HTTP proxies to your custom API backend. See /config/index.js -> proxyTable

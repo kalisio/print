@@ -42,6 +42,7 @@ module.exports = {
   host: process.env.HOSTNAME || 'localhost',
   port: serverPort,
   distPath: fs.existsSync(path.join(__dirname, '../../dist/pwa')) ? path.join(__dirname, '../../dist/pwa') : path.join(__dirname, '../../dist/spa'),
+  distPlayground: path.join(__dirname, '../../pdfme/playground/dist'),
   playgroundPdfmeUrl: process.env.PLAYGROUND_PDFME_URL,
   /* To enable HTTPS
   https: {

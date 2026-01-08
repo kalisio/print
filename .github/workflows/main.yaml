@@ -18,11 +18,6 @@ on:
         default: false
         required: false
         type: boolean
-      build_pdfme:
-        description: "Build pdfme"
-        default: false
-        required: false
-        type: boolean
 
 jobs:
   run_tests:
@@ -103,26 +98,3 @@ jobs:
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
         run: bash ./scripts/build_app.sh -p -r ${{ github.job }} -n ${{ matrix.node }} -d ${{ matrix.debian }}
-
-  build_pdfme:
-    name: Build pdfme
-    if: ${{
-      github.event_name == 'workflow_dispatch' && inputs.build_pdfme ||
-      github.event_name == 'push' && !contains(github.event.head_commit.message, 'skip build pdfme')
-      }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Init runner
-        run: bash ./scripts/init_runner.sh ${{ github.job }}
-      - name: Setup workspace
-        env:
-          KALISIO_GITHUB_URL: ${{ secrets.KALISIO_GITHUB_URL }}
-        run: bash ./scripts/setup_workspace.sh -k nokli
-      - name: Build pdfme
-        env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-        run: bash ./scripts/build_pdfme.sh -p -r ${{ github.job }}
