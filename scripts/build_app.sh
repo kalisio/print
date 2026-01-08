@@ -60,6 +60,7 @@ load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.e
 
 # Build playground
 cd $PDFME_DIR/playground && npm run build
+cd $ROOT_DIR
 
 # kli file is used in container to install, link
 KLI_FILE=$(get_app_kli_file)
