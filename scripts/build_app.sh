@@ -9,6 +9,8 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 
 . "$THIS_DIR/kash/kash.sh"
 
+PDFME_DIR="$ROOT_DIR/pdfme"
+
 ## Parse options
 ##
 
