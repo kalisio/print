@@ -29,8 +29,5 @@ export default async function () {
   }
 
   // Create the default users
-  // Do not use exposed passwords on staging/prod environments
-  if (!process.env.NODE_APP_INSTANCE) {
-    await createDefaultUsers.call(app)
-  }
+  await createDefaultUsers.call(app)
 }
