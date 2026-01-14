@@ -67,10 +67,13 @@
     ]
   },
   "dependencies": {
+    "@automerge/automerge-repo": "^2.4.0",
+    "@automerge/automerge-repo-network-websocket": "^2.4.0",
+    "@automerge/automerge-repo-storage-indexeddb": "^2.4.0",
     "@casl/ability": "^6.3.0",
     "@casl/mongoose": "^7.1.0",
     "@feathersjs/client": "^5.0.8",
-    "@kalisio/feathers-localforage": "^1.2.0",
+    "@kalisio/feathers-automerge": "^0.3.8",
     "@kalisio/feathers-s3": "^1.5.0",
     "@kalisio/feathers-webpush": "^1.0.1",
     "@pdfme/ui": "^5.2.0",
@@ -94,6 +97,7 @@
     "feathers-reactive": "^0.11.0",
     "i18next": "^21.6.16",
     "jwt-decode": "^3.1.2",
+    "localforage": "^1.10.0",
     "loglevel": "^1.8.0",
     "mathjs": "^10.5.0",
     "mime": "^3.0.0",
