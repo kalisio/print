@@ -18,6 +18,8 @@ export class Server {
     if (process.env.NODE_ENV === 'production') {
       this.app.use('/', express.static(this.app.get('distPath')))
       this.app.use(this.app.get('apiPath') + '/playground/assets', express.static(path.join(this.app.get('distPlayground'), 'assets')))
+      this.app.use(this.app.get('apiPath') + '/playground/template-assets', express.static(path.join(this.app.get('distPlayground'), 'template-assets')))
+      this.app.use(this.app.get('apiPath') + '/playground/imgs', express.static(path.join(this.app.get('distPlayground'), 'imgs')))
       this.app.get(this.app.get('apiPath') + '/playground/*', authenticate('jwt'), (req, res) => {
         res.sendFile(path.join(this.app.get('distPlayground'), 'index.html'))
       })
