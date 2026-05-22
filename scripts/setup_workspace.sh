@@ -16,7 +16,6 @@ PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
 DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
 APP_FILE="$PLAYGROUND_DIR/src/App.tsx"
-EXTERNAL_BUTTON_FILE="$PLAYGROUND_DIR/src/components/ExternalButton.tsx"
 VITE_CONFIG_FILE="$PLAYGROUND_DIR/vite.config.ts"
 
 ## Parse options
@@ -85,21 +84,18 @@ if [ ! -d "$PDFME_DIR" ]; then
     sed -i '1i import { updatePluginMaps } from "../utils.map";' "$DESIGNER_FILE"
     # Add 'await updatePluginMaps(designer.current)' before 'await generatePDF(designer.current)'
     # Find the generatePDF call and insert updatePluginMaps before it
-    sed -i '/await generatePDF(designer\.current)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current);' "$DESIGNER_FILE"
+    sed -i '/await generatePDF(designer\.current, output)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current, output);' "$DESIGNER_FILE"
 
     # Add base option to Vite config 
     sed -i "/export default defineConfig({/a\\
   base: '/api/playground/'," "$VITE_CONFIG_FILE"
 
-    #
-    sed -i 's#<a href={href} target="_blank" rel="noopener noreferrer">#<a href={href} target="_blank" rel="noopener noreferrer" className="hidden">#' "$EXTERNAL_BUTTON_FILE"
-
     # Replace entire App.tsx content
     cat > "$APP_FILE" << 'EOF'
-    import { useEffect } from "react";
-    import { Routes, Route } from "react-router-dom";
+    import { useEffect, Suspense } from 'react';
+    import { Routes, Route } from 'react-router-dom';
     import { ToastContainer } from 'react-toastify';
-    import Designer from "./routes/Designer";
+    import Designer from './routes/Designer';
 
     export default function App() {
         useEffect(() => {
@@ -112,9 +108,11 @@ if [ ! -d "$PDFME_DIR" ]; then
 
     return (
         <div className="min-h-screen flex flex-col">
+        <Suspense fallback={<main className="min-h-0 flex-1 bg-gray-100" />}>
         <Routes>
             <Route path={"/api/playground"} element={<Designer />} />
         </Routes>
+        </Suspense>
         <ToastContainer />
         </div>
     );
