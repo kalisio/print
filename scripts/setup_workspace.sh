@@ -17,6 +17,7 @@ PLUGINS_FILE="$PLUGINS_DIR/index.ts"
 DESIGNER_FILE="$PLAYGROUND_DIR/src/routes/Designer.tsx"
 APP_FILE="$PLAYGROUND_DIR/src/App.tsx"
 VITE_CONFIG_FILE="$PLAYGROUND_DIR/vite.config.ts"
+HELPER_FILE="$PLAYGROUND_DIR/src/helper.ts"
 
 ## Parse options
 ##
@@ -86,9 +87,12 @@ if [ ! -d "$PDFME_DIR" ]; then
     # Find the generatePDF call and insert updatePluginMaps before it
     sed -i '/await generatePDF(designer\.current, output)/i\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ await updatePluginMaps(designer.current, output);' "$DESIGNER_FILE"
 
-    # Add base option to Vite config 
+    # Add base option to Vite config
     sed -i "/export default defineConfig({/a\\
   base: '/api/playground/'," "$VITE_CONFIG_FILE"
+
+    # Fix fetch paths in helper.ts to respect Vite base path
+    sed -i 's|`/template-assets/|`${import.meta.env.BASE_URL}template-assets/|g' "$HELPER_FILE"
 
     # Replace entire App.tsx content
     cat > "$APP_FILE" << 'EOF'
