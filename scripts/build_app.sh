@@ -14,6 +14,8 @@ slack_report() {
 }
 
 PDFME_DIR="$ROOT_DIR/pdfme"
+# Keep in sync with setup_workspace.sh: pdfme mandates node 24 / npm 11.
+PDFME_NODE_VER=24
 
 ## Parse options
 ##
@@ -75,8 +77,8 @@ for env in "${envs[@]}"; do
     export "$env=$value"
   fi
 done
-cd $PDFME_DIR/playground && npm run build
-cd $ROOT_DIR
+cd "$PDFME_DIR/playground" && nvm exec "$PDFME_NODE_VER" npm run build
+cd "$ROOT_DIR"
 
 # kli file is used in container to install, link
 KLI_FILE=$(get_app_kli_file)

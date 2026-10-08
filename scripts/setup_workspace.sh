@@ -11,6 +11,9 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 
 PDFME_REPO_URL="https://github.com/pdfme/pdfme.git"
 PDFME_DIR="$ROOT_DIR/pdfme"
+# pdfme mandates node 24 / npm 11, cf. its .nvmrc and packageManager fields.
+# npm 10 fails to resolve its dependency tree since pdfme moved to vite-plus 1.0.
+PDFME_NODE_VER=24
 PLAYGROUND_DIR="$ROOT_DIR/pdfme/playground"
 PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
@@ -123,9 +126,19 @@ if [ ! -d "$PDFME_DIR" ]; then
     }
 EOF
 
-    # Install dependencies and build the project
-    cd $PDFME_DIR && npm install && npm run build
-    cd $PDFME_DIR/playground && npm install
+fi
+
+# Install dependencies and build the project.
+# This has to live outside the clone guard above: the playground depends on the
+# workspace packages through 'file:' links and its build step imports @pdfme/*
+# from packages/*/dist, so those packages must be built whenever they are missing.
+if [ ! -f "$PDFME_DIR/packages/common/dist/index.js" ]; then
+    cd "$PDFME_DIR"
+    nvm exec "$PDFME_NODE_VER" npm install
+    nvm exec "$PDFME_NODE_VER" npm run build
+    cd "$PDFME_DIR/playground"
+    nvm exec "$PDFME_NODE_VER" npm install
+    cd "$ROOT_DIR"
 fi
 
 # if [ "$CI" != true ]; then
