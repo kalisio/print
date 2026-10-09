@@ -10,10 +10,11 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 . "$THIS_DIR/kash/kash.sh"
 
 PDFME_REPO_URL="https://github.com/pdfme/pdfme.git"
+# Pinned: from 6.2.4 on, playground/vite.config.ts became a function, so the
+# `base` injection below silently stops matching, and vite-plus 1.0 prevents
+# npm 10 from resolving the dependency tree.
+PDFME_REF="6.2.3"
 PDFME_DIR="$ROOT_DIR/pdfme"
-# pdfme mandates node 24 / npm 11, cf. its .nvmrc and packageManager fields.
-# npm 10 fails to resolve its dependency tree since pdfme moved to vite-plus 1.0.
-PDFME_NODE_VER=24
 PLAYGROUND_DIR="$ROOT_DIR/pdfme/playground"
 PLUGINS_DIR="$PLAYGROUND_DIR/src/plugins"
 PLUGINS_FILE="$PLUGINS_DIR/index.ts"
@@ -69,7 +70,7 @@ fi
 if [ ! -d "$PDFME_DIR" ]; then
     # Create the PDFME directory and clone the repository
     mkdir -p "$PDFME_DIR"
-    git clone "$PDFME_REPO_URL" "$PDFME_DIR"
+    git clone --branch "$PDFME_REF" --depth 1 "$PDFME_REPO_URL" "$PDFME_DIR"
 
     # Modify the plugins index.ts file
     # Inserts ‘map’ import at the beginning of the plugins file
@@ -126,19 +127,9 @@ if [ ! -d "$PDFME_DIR" ]; then
     }
 EOF
 
-fi
-
-# Install dependencies and build the project.
-# This has to live outside the clone guard above: the playground depends on the
-# workspace packages through 'file:' links and its build step imports @pdfme/*
-# from packages/*/dist, so those packages must be built whenever they are missing.
-if [ ! -f "$PDFME_DIR/packages/common/dist/index.js" ]; then
-    cd "$PDFME_DIR"
-    nvm exec "$PDFME_NODE_VER" npm install
-    nvm exec "$PDFME_NODE_VER" npm run build
-    cd "$PDFME_DIR/playground"
-    nvm exec "$PDFME_NODE_VER" npm install
-    cd "$ROOT_DIR"
+    # Install dependencies and build the project
+    cd $PDFME_DIR && npm install && npm run build
+    cd $PDFME_DIR/playground && npm install
 fi
 
 # if [ "$CI" != true ]; then
