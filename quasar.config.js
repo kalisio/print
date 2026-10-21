@@ -100,6 +100,9 @@ module.exports = configure(function (ctx) {
           url: require.resolve('url')
         },
         cfg.resolve.modules = [
+          // Walk up from the importing file first, so each package (and the linked KDK)
+          // resolves the dependencies pnpm installed for it, then fall back to ours
+          'node_modules',
           path.resolve(__dirname, 'node_modules')
         ],
         cfg.resolve.alias = {

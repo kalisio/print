@@ -1,0 +1,11 @@
+packages:
+  - '.'
+  - '!api/**'
+  - '!docs/**'
+allowBuilds:
+  cbor-extract: true
+  core-js: true
+  protobufjs: true
+  puppeteer: true
+  vue: true
+shamefullyHoist: true

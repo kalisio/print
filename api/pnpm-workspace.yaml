@@ -1,0 +1,4 @@
+allowBuilds:
+  cbor-extract: true
+  fsevents: true
+  nodemon: true
