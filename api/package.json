@@ -31,7 +31,7 @@
     "prod": "cross-env NODE_ENV=production node --conditions=development src/main.js",
     "lint": "standard src/**/*.js test/**/*.js --fix",
     "mocha": "cross-env NODE_OPTIONS=--conditions=development NODE_CONFIG_DIR=./test/config/ mocha",
-    "coverage": "c8 pnpm mocha",
+    "coverage": "c8 node --run mocha",
     "test": "pnpm lint && pnpm coverage"
   },
   "standard": {
