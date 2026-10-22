@@ -10,6 +10,11 @@
 
 const path = require('path')
 const fs = require('fs')
+// With pnpm webpack is not reachable directly from the project, resolve the very same
+// instance as Quasar so the plugins we push are the ones it actually loads
+const webpack = require(require.resolve('webpack', {
+  paths: [path.dirname(require.resolve('@quasar/app-webpack/package.json'))]
+}))
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const { configure } = require('quasar/wrappers')
 
@@ -93,11 +98,14 @@ module.exports = configure(function (ctx) {
 
       extendWebpack (cfg) {
         cfg.resolve.fallback = {
+          ...cfg.resolve.fallback,
           fs: false,
-          path: require.resolve('path-browserify'),
+          buffer: require.resolve('buffer/'),
           crypto: require.resolve('crypto-browserify'),
+          path: require.resolve('path-browserify'),
           stream: require.resolve('stream-browserify'),
-          url: require.resolve('url')
+          url: require.resolve('url'),
+          vm: require.resolve('vm-browserify')
         },
         cfg.resolve.modules = [
           // Walk up from the importing file first, so each package (and the linked KDK)
@@ -127,6 +135,12 @@ module.exports = configure(function (ctx) {
           ...cfg.experiments,
           asyncWebAssembly: true
         }
+        // Absolute paths are required, otherwise modules coming from the linked packages
+        // (kdk-ekosystem, common-ekosystem) do not find them, and ESM needs the extension
+        cfg.plugins.push(new webpack.ProvidePlugin({
+          process: require.resolve('process/browser'),
+          Buffer: [require.resolve('buffer/'), 'Buffer']
+        }))
       }
     },
 
