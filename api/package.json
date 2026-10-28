@@ -26,7 +26,7 @@
     "release:patch": "npm --no-git-tag-version version patch",
     "release:minor": "npm --no-git-tag-version version minor",
     "release:major": "npm --no-git-tag-version version major",
-    "dev": "nodemon --watch src --exec pnpm debug",
+    "dev": "cross-env NODE_ENV=development node --conditions=development --inspect --watch src/main.js",
     "debug": "cross-env NODE_ENV=development node --conditions=development --inspect src/main.js",
     "prod": "cross-env NODE_ENV=production node --conditions=development src/main.js",
     "lint": "standard src/**/*.js test/**/*.js --fix",
@@ -49,7 +49,6 @@
     "concat-stream": "^2.0.0",
     "cross-env": "^5.2.0",
     "mocha": "^9.1.1",
-    "nodemon": "^1.11.0",
     "shelljs": "^0.8.5",
     "standard": "^16.0.4"
   },
