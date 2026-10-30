@@ -82,7 +82,7 @@ module.exports = configure(function (ctx) {
 
       vueLoaderOptions: {
         compilerOptions: {
-          isCustomElement: tag => ['pinch-zoom'].includes(tag)        
+          isCustomElement: tag => ['pinch-zoom'].includes(tag)
         }
       },
 
@@ -97,6 +97,10 @@ module.exports = configure(function (ctx) {
       },
 
       extendWebpack (cfg) {
+        const flavor = process.env.NODE_APP_INSTANCE?.toLowerCase()
+        if (flavor !== 'prod') {
+          cfg.resolve.conditionNames = ['development', '...']
+        }
         cfg.resolve.fallback = {
           ...cfg.resolve.fallback,
           fs: false,
@@ -224,7 +228,7 @@ module.exports = configure(function (ctx) {
         'QToggle',
         'QTooltip'
       ],
-      
+
       directives: [
         'ClosePopup',
         'Ripple',
@@ -252,11 +256,11 @@ module.exports = configure(function (ctx) {
       workboxPluginMode: 'InjectManifest', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: { // only for GenerateSW
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024
-      }, 
+      },
 
       // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
       // if using workbox in InjectManifest mode
-      
+
       manifest: {
         name: pwaName,
         short_name: pwaName,

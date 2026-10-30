@@ -36,10 +36,8 @@ RUN yarn install
 # Setup app & cleanup workspace
 WORKDIR /opt/kalisio/
 RUN \
-  LINK=1 KLI_FILE=/opt/kalisio/kli.js KALISIO_DEVELOPMENT_DIR=/opt/kalisio \
-    node /opt/kalisio/kli/index.js /opt/kalisio/kli.js --install --fail-on-error && \
-  cd /opt/kalisio/common-ekosystem && pnpm build && \
-  cd /opt/kalisio/kdk-ekosystem && pnpm -r --filter './packages/*' --filter '!@kalisio/kdk-core-ui' build && \
+  KLI_FILE=/opt/kalisio/kli.js KALISIO_DEVELOPMENT_DIR=/opt/kalisio \
+    node /opt/kalisio/kli/index.js /opt/kalisio/kli.js --install --fail-on-error --production && \
   cd /opt/kalisio/$APP && pnpm pwa:build && \
   rm -fR /opt/kalisio/kli /opt/kalisio/kli.js
 
