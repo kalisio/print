@@ -1,6 +1,4 @@
-[![Kalisio](https://kalisio.github.io/kalisioscope/print/print-logo-color-512x192.png)](https://kalisio.com)
-
-## Kalisio Print
+# print
 
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/print?sort=semver&label=latest)](https://github.com/kalisio/kapp/releases)
 [![CI](https://github.com/kalisio/print/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/print/actions/workflows/main.yaml)
@@ -10,18 +8,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kalisio/print.svg?style=plastic)](https://hub.docker.com/r/kalisio/print/)
 
-For more information please visit our websites:
-* [Kalisio Company](https://kalisio.com/)
-* [Kalisio Print development build](https://print.dev.kalisio.xyz/)
-
-This application is based on [pdfme](https://github.com/pdfme/pdfme).
+_Kalisio's printing application built with [pdfme ](https://github.com/pdfme/pdfme)_
 
 ## License
 
-This project is licensed under the MIT License - see the [license file](./LICENSE) for details
+Licensed under the [MIT license](LICENSE).
 
-## Authors
+Copyright (c) 2025-present [Kalisio](https://kalisio.com)
 
-This project is sponsored by 
-
-[![Kalisio](https://s3.eu-central-1.amazonaws.com/kalisioscope/kalisio/kalisio-logo-black-256x84.png)](https://kalisio.com)
+<a href="https://kalisio.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://kalisio.github.io/kalisioscope/kalisio/kalisio-logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://kalisio.github.io/kalisioscope/kalisio/kalisio-logo-light.svg">
+    <img alt="Kalisio" src="https://kalisio.github.io/kalisioscope/kalisio/kalisio-logo-light.svg" height="96">
+  </picture>
+</a>
