@@ -108,15 +108,8 @@ module.exports = configure(function (ctx) {
           crypto: require.resolve('crypto-browserify'),
           path: require.resolve('path-browserify'),
           stream: require.resolve('stream-browserify'),
-          url: require.resolve('url'),
-          vm: require.resolve('vm-browserify')
+          url: require.resolve('url')
         },
-        cfg.resolve.modules = [
-          // Walk up from the importing file first, so each package (and the linked KDK)
-          // resolves the dependencies pnpm installed for it, then fall back to ours
-          'node_modules',
-          path.resolve(__dirname, 'node_modules')
-        ],
         cfg.resolve.alias = {
           ...cfg.resolve.alias, // This adds the existing aliases
           '@components': [
@@ -139,12 +132,6 @@ module.exports = configure(function (ctx) {
           ...cfg.experiments,
           asyncWebAssembly: true
         }
-        // Absolute paths are required, otherwise modules coming from the linked packages
-        // (kdk-ekosystem, common-ekosystem) do not find them, and ESM needs the extension
-        cfg.plugins.push(new webpack.ProvidePlugin({
-          process: require.resolve('process/browser'),
-          Buffer: [require.resolve('buffer/'), 'Buffer']
-        }))
       }
     },
 
